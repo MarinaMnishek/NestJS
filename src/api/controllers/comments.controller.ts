@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Post, Put, Query } from '@nestjs/common'
 import { CommentsService } from '../modules/comments/comments.service';
 import { Comments } from '../dto/comments.dto';
 import { DecrementId } from '../../utils/decorators/decrement-id'
+import { DecrementIdFromBody } from '../../utils/decorators/decrement-id-from-body';
 
 @Controller('comments')
 export class CommentsController {
@@ -26,7 +27,7 @@ export class CommentsController {
 
 
   @Delete('delete')
-  async deleteComment(@Body() body: { postId: number, commentId: number }): Promise<Comments[]> {
+  async deleteComment(@Body() @DecrementIdFromBody(['postId']) body: { postId: number, commentId: number }): Promise<Comments[]> {
     return this.commentsService.deleteComment(body.postId, body.commentId);
   }
 

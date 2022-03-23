@@ -29,7 +29,7 @@ export class CommentsService {
 
   async deleteComment(postId: number, commentId: number): Promise<Comments[]> {
     const posts = await this.postsService.getPosts()
-    const post = posts[postId - 1]
+    const post = posts[postId]
     const comments = post.comments
     const index = comments.findIndex(item => item.id == commentId)
     if (index >= 0) {
@@ -37,6 +37,17 @@ export class CommentsService {
       return comments;
     } else throw new Error('Comment not found');
   }
+
+  // async deleteComment(postId: number, commentId: number): Promise<Comments[]> {
+  //   const posts = await this.postsService.getPosts()
+  //   const post = posts[postId - 1]
+  //   const comments = post.comments
+  //   const index = comments.findIndex(item => item.id == commentId)
+  //   if (index >= 0) {
+  //     comments.splice(index, 1);
+  //     return comments;
+  //   } else throw new Error('Comment not found');
+  // }
 
   async updateComment(postId: number, commentId: number, data: Comments): Promise<Comments> {
     const posts = await this.postsService.getPosts()
