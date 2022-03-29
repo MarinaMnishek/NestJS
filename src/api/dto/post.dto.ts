@@ -1,5 +1,6 @@
-import { IsInt, IsPositive, IsString, IsDate, IsArray, IsOptional } from "class-validator";
+import { IsInt, IsPositive, IsString, IsDate, IsArray, IsOptional, IsObject, IsNotEmptyObject, MinLength, IsNotEmpty, IsEmail } from "class-validator";
 import { Comments } from "./comments.dto";
+import { UserInfo } from "./user.dto";
 
 export class CreatePost {
 
@@ -16,9 +17,22 @@ export class CreatePost {
   @IsOptional()
   comments!: Comments[];
 
+  // @IsObject()
+  // @IsNotEmptyObject()
+  //  userInfo!: UserInfo;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  userName!: string;
+
+  @IsString()
+  @IsEmail()
+  userEmail!: string;
+
 }
 
-export class Posts extends CreatePost{
+export class Posts extends CreatePost {
   @IsInt()
   @IsPositive()
   id!: number;
@@ -31,4 +45,10 @@ export class Posts extends CreatePost{
   @IsOptional()
   updatedAt!: Date;
 
+
+
+
+
 }
+
+
