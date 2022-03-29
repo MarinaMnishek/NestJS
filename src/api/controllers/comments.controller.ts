@@ -10,7 +10,7 @@ import { join } from 'path';
 import { LoggingInterceptor } from '../modules/logger/logger.interceptor';
 
 
-@UseInterceptors(new LoggingInterceptor)
+// @UseInterceptors(new LoggingInterceptor)
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) { }
@@ -22,7 +22,7 @@ export class CommentsController {
 
   @Get('get-one')
   async getComment(@Query() @DecrementId(['postId', 'commentId']) query: { postId: number, commentId: number }): Promise<Comments | undefined> {
-    // console.log(query.postId + ' ' + query.commentId);
+   
 
     return this.commentsService.getComment(query.postId, query.commentId);
   }
@@ -44,27 +44,12 @@ export class CommentsController {
   }
 
   @Post('upload')
+  @UseInterceptors(new LoggingInterceptor())
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@Body() body: { postId: number, commentId: number }, @UploadedFile() file: Express.Multer.File) {
     await this.commentsService.assignFile(body.postId, body.commentId, file.path)
-    // console.log(body.postId);
-    // console.log(file);
+    
   }
-
-
-// @Get('file')
-//   getFile(@Res() res: Response) {
-//     const file = createReadStream(join(process.cwd(), '/upload/2cace96a1b273c65814cabccbba1a594'));
-//     file.pipe(res);
-//   }
-
-  // @Get('file')
-  // async getFile(@Query() @DecrementId(['postId', 'commentId']) query: { postId: number, commentId: number }): Promise<StreamableFile> {
-  //   const path = await this.commentsService.getPath(query.postId, query.commentId)
-  //   if (!path) throw new Error('No attachment found')
-  //   const file = createReadStream(join(process.cwd(), path));
-  //   return new StreamableFile(file);
-  // }
 
   @Get('file')
   async getFile(@Query() @DecrementId(['postId', 'commentId']) query: { postId: number, commentId: number }, @Res() res: Response) {

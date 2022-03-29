@@ -14,6 +14,8 @@ export class CommentsService {
       this.logger.setContext('CommentsService')
      }
 
+
+    
   async getComments(postId: number): Promise<Comments[]> {
     const posts = await this.postsService.getPosts()
     return posts[postId].comments;

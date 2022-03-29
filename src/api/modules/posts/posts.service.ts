@@ -47,6 +47,7 @@ export class PostsService {
   }
 
   async createPost(data: CreatePost): Promise<Posts> {
+       
     const post: Posts = {
       ...data,
       id: postId++,
