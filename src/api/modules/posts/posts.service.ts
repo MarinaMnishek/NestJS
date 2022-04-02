@@ -24,6 +24,8 @@ const posts: PostsDTO[] = [
   },
 ];
 
+let postId = 2;
+
 @Injectable()
 export class PostsService {
   async getPosts(): Promise<PostsDTO[]> {
@@ -35,8 +37,15 @@ export class PostsService {
   }
 
   async createPost(data: PostsDTO): Promise<PostsDTO> {
-    posts.push(data);
-    return data;
+    const post: PostsDTO = {
+      ...data,
+      id: postId++,
+      createdAt: new Date(Date.now()),
+      updatedAt: new Date(Date.now()),
+      
+    }
+    posts.push(post);
+    return post;
   }
 
   async updatePost(data: PostsDTO): Promise<PostsDTO> {
@@ -50,9 +59,9 @@ export class PostsService {
   }
 
   async deletePost(id: number): Promise<PostsDTO[]> {
-    const post = posts[id];
-    if (post) {
-      posts.splice(id, id);
+    const index = posts.findIndex(item => item.id == id)
+    if (index >= 0) {
+      posts.splice(index, 1);
       return posts;
     } else throw new Error('Post not found');
   }

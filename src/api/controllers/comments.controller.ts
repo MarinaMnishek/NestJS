@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Post,
+  Put,
   Query,
   Render,
   Res,
@@ -20,11 +21,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Multer } from 'multer';
 import { LoggingInterceptor } from '../modules/logger/logger.interceptor';
+import { MailService } from '../../mail/mail.service'
+import { string } from 'yargs';
 
 @Controller('comments')
 @UseInterceptors(LoggingInterceptor)
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) { }
+  constructor(private readonly commentsService: CommentsService,
+    private mailService: MailService,) { }
 
   @Get('template')
   @Render('index')
@@ -63,8 +67,15 @@ export class CommentsController {
   async deleteComment(
     @Body() body: { postId: number; commentId: number },
   ): Promise<PostsDTO[]> {
+       
     return this.commentsService.deleteComment(body.postId, body.commentId);
   }
+
+  @Put('update')
+  async updateComment(@Query() query: { postId: number, commentId: number }, @Body() data:CommentDTO): Promise<CommentDTO> {
+     return this.commentsService.updateComment(query.postId, query.commentId, data);
+  }
+
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))

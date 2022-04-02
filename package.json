@@ -10,7 +10,7 @@
     "start:api:dev": "tsc-watch -p tsconfig.build.json --onSuccess \"node dist/src/dbapi/main.js\"",
     "prebuild": "rimraf dist",
     "build": "rimraf dist && tsc && npm run copy-files",
-    "copy-files": "copyfiles -a .env views/index.hbs views/templates/test.hbs dist/",
+    "copy-files": "copyfiles -a .env views/index.hbs views/templates/test.hbs views/templates/updateComment.hbs dist/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
