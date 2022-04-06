@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Posts } from './database/entities/post.entity';
+import { Posts } from '../../database/entities/post.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PostsDTO } from '../../dto/post.dto';
 
 @Injectable()
-export class AppService {
+export class PostsService {
   constructor(
     @InjectRepository(Posts)
     private readonly postsRepository: Repository<Posts>,
@@ -17,20 +18,21 @@ export class AppService {
 
   async getPost(id: number): Promise<Posts | undefined> {
     return this.postsRepository.findOne({
+      relations: ['comments'],
       where: {
-        id,
+         id,
       },
     });
   }
 
-  async createPost(data: Posts): Promise<Posts> {
+  async createPost(data: PostsDTO): Promise<Posts> {
     return this.postsRepository.save(data);
   }
 
-  async updatePost(data: Posts): Promise<Posts> {
+  async updatePost(id: number, data: PostsDTO): Promise<Posts> {
     const existingPost = await this.postsRepository.findOne({
       where: {
-        id: data.id,
+        id: id,
       },
     });
     return this.postsRepository.save({
@@ -41,6 +43,7 @@ export class AppService {
 
   async deletePost(id: number): Promise<Posts> {
     const post = await this.postsRepository.findOne({
+      relations: ['comments'],
       where: {
         id,
       },
@@ -48,4 +51,5 @@ export class AppService {
     if (post) return this.postsRepository.remove(post);
     else throw new Error('Post not found');
   }
+ 
 }
