@@ -38,7 +38,7 @@ export class CommentsController {
     return { message: 'Hello world!' };
   }
 
-  @Get('/')
+  @Get('get-all')
   async getComments(
     @Query() @DecrementId(['id']) query: { id: number },
   ): Promise<CommentDTO[]> {
@@ -48,8 +48,7 @@ export class CommentsController {
   @Get('get-one')
   async getComment(
     @Query()
-    @DecrementId(['postId', 'commentId'])
-    query: {
+      query: {
       postId: number;
       commentId: number;
     },

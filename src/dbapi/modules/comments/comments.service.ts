@@ -10,7 +10,8 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 
-// let commentId = 3;
+
+
 @Injectable()
 export class CommentsService {
   constructor(
@@ -28,9 +29,13 @@ export class CommentsService {
     return posts[id].comments;
   }
 
-  async getComment(postId: number, commentId: number): Promise<CommentDTO> {
-    const posts = await this.postsService.getPosts();
-    return posts[postId].comments[commentId];
+  async getComment(postId: number, commentId: number): Promise<CommentDTO | undefined | any> {
+    return this.commentsRepository.findOne({
+      where: {
+         id: commentId,
+      },
+    });
+   
   }
 
   async createComment(postId: number, data: CommentDTO): Promise<CommentDTO> {
@@ -43,68 +48,38 @@ export class CommentsService {
     });
   }
 
-  // async createComment(postId: number, data: CommentDTO): Promise<CommentDTO> {
-  //   const comment: CommentDTO = {
-  //     ...data,
-  //     id: commentId++,
-  //     createdAt: new Date(Date.now())
-
-  //   }
-
-  //   await this.mailService.sendMessage('testmail188@mail.ru')
-  //   const posts = await this.postsService.getPosts()
-
-  //   posts[postId].comments.push(comment);
-
-  //   return data;
-
-  // }
-
-  
+   
   async deleteComment(postId: number, commentId: number): Promise<Comment> {
-
-    const posts = await this.postsService.getPosts()
-    const post = posts[postId-1]
-    const comment = post.comments[commentId-1]
-    const comments = post.comments
-    // const index = comments.findIndex(item => item.id == commentId)
-    if (comment) {
-      return this.commentsRepository.remove(comment);
-    } else throw new Error('Comment not found');
+    const comment = await this.commentsRepository.findOne({
+      
+      where: {
+        id: commentId,
+      },
+    });
+    if (comment) return this.commentsRepository.remove(comment);
+    else throw new Error('comment not found');
+   
   }
-
-  // async deleteComment(postId: number, commentId: number): Promise<PostsDTO[]> {
-
-  //   const posts = await this.postsService.getPosts()
-  //   const post = posts[postId - 1]
-  //   console.log(posts[postId - 1]);
-
-  //   const comments = post.comments
-  //   const index = comments.findIndex(item => item.id == commentId)
-  //   if (index >= 0) {
-  //     comments.splice(index, 1);
-  //     return posts;
-  //   } else throw new Error('Comment not found');
-  // }
 
   async updateComment(postId: number, commentId: number, data: CommentDTO): Promise<CommentDTO> {
-    const posts = await this.postsService.getPosts()
-    const post = posts[postId - 1]
-    const comments = post.comments
-    const index = comments.findIndex(item => item.id == commentId)
-    const commentLast = comments[index].text
-    let existingComment = comments[index];
-    existingComment = {
-      ...existingComment,
-      ...data,
-    };
-    comments[commentId - 1] = existingComment;
-    const messageUpdate = { 'last': commentLast, 'now': comments[commentId - 1].text }
+    const comment = await this.commentsRepository.findOne({
+      where: {
+         id: commentId,
+      },
+    });
+    console.log(comment?.text);
+    
+    
+    const messageUpdate = { 'last': comment?.text, 'now': data.text }
     await this.mailService.sendMessageUpdateComment('testmail188@mail.ru', messageUpdate)
-    return comments[commentId - 1];
+    return this.commentsRepository.save({
+      ...comment,
+      ...data,
+    });
 
   }
 
+  
   async saveFile(path: string, data: Buffer) {
     fs.writeFile(path, data, (error) => {
       if (error) throw new Error(error.message);
