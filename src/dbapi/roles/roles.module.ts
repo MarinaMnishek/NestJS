@@ -8,7 +8,6 @@ import { User } from '../database/entities/user.entity';
 import { SessionsModule } from '../modules/sessions/sessions.module';
 import { UsersRoles } from '../database/entities/users-roles.entity';
 
-
 @Module({
 	imports: [ConfigModule.forRoot(), TypeOrmModule.forFeature([Role, User, UsersRoles]), SessionsModule],
 	controllers: [RolesController],
