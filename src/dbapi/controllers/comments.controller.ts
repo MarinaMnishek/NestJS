@@ -84,9 +84,4 @@ export class CommentsController {
   }
 
 
-  // @Put('update')
-  // async updateComment(@Query() query: { postId: number; commentId: number }, @Body() data: CommentDTO): Promise<CommentDTO> {
-    
-  //   return this.commentsService.updateComment(query.postId, query.commentId, data);
-  // }
 }

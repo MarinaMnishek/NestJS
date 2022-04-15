@@ -57,30 +57,39 @@ export class CommentsService {
   }
 
   async deleteComment(postId: number, commentId: number): Promise<Comment> {
+    
     const posts = await this.postsService.getPosts();
-    const post = posts[postId - 1];
-    const comment = post.comments[commentId - 1];
+    
+    const post = posts.find(item => item.id == postId)
+    console.log(post)
+    const comment = post?.comments.find(item => item.id == commentId)
+ 
     if (comment) {
       return this.commentsRepository.remove(comment);
     } else throw new Error('Comment not found');
   }
 
   async updateComment(postId: number, commentId: number, data: CommentDTO): Promise<CommentDTO> {
+
+    this.eventEmitter.emit('comment.update', {
+      id: commentId,
+      postId: postId,
+      text: data.text
+      });
+
     const comment = await this.commentsRepository.findOne({
       where: {
          id: commentId,
       },
     });
     // console.log(comment?.text);
-    this.eventEmitter.emit('comment.update', {
-      commentId: commentId,
-      postId: postId,
-      });
+   
+    
       
     
     
-    const messageUpdate = { 'last': comment?.text, 'now': data.text }
-    await this.mailService.sendMessageUpdateComment('testmail188@mail.ru', messageUpdate)
+    // const messageUpdate = { 'last': comment?.text, 'now': data.text }
+    // await this.mailService.sendMessageUpdateComment('testmail188@mail.ru', messageUpdate)
     return this.commentsRepository.save({
       ...comment,
       ...data,
