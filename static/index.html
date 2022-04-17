@@ -95,7 +95,17 @@
                 },
                 login(login, password) {
                     this.socket.chat.emit('login', login, password);
+                },
+               
+                handleUpdateComments(payload) {
+                    
+                    let msg = {message: payload.text, room:this.activeRoom, sender:this.username, postId: payload.postId,commentId: payload.commentId}
+
+                    let indexOfUpdatingComment = this.messages[this.activeRoom].findIndex(item => item.commentId == payload.commentId)
+                    
+                    this.messages[this.activeRoom].splice(indexOfUpdatingComment, 1, msg)
                 }
+
 
             },
             computed: {
@@ -117,8 +127,8 @@
                 this.login(this.username, this.password);
 
                 this.socket.chat.on('logIn', (msg) => {
-                    console.log(this.loggedIn)
-                    console.log(msg)
+                    // console.log(this.loggedIn)
+                    // console.log(msg)
                     this.loggedIn = msg;
 
                     if (this.loggedIn) {
@@ -127,7 +137,7 @@
                         });
 
                         this.socket.chat.on('getComments', (msg) => {
-                            console.log(msg)
+                            // console.log(msg)
                             this.handleComments(msg);
                         });
 
@@ -138,14 +148,19 @@
                             this.rooms[room] = true;
                         });
                         this.socket.chat.on('leftRoom', (room) => {
-                            console.log("user lest room")
+                            console.log("user left room")
                             this.messages[room] = [];
                             this.rooms[room] = false;
                         });
-                        this.socket.chat.on('commentUpdate', (msg) => {
-                            console.log('222222222',msg)
-                            this.handleUpdateComment(msg);
+                        this.socket.chat.on('commentUpdated', (msg) => {
+                            console.log('222222222', msg)
+                            this.handleUpdateComments(msg)
                         });
+
+                        // this.socket.chat.on('commentDelete', (msg) => {
+                        //     this.handleComments(msg);
+                        // });
+
 
                         this.socket.alerts = io('http://localhost:3000/alert');
                         this.socket.alerts.on('alertToClient', (msg) => {
@@ -154,38 +169,6 @@
                     }
                     else alert("Wrong password")
                 });
-
-                // console.log("qwe")
-                // alert("Wrong password")
-                // this.socket.chat.on('chatToClient', (msg) => {
-                //     this.receiveChatMessage(msg);
-                // });
-
-                // this.socket.chat.on('getComments', (msg) => {
-                //     console.log(msg)
-                //     this.handleComments(msg);
-                // });
-
-                // this.socket.chat.on('connect', () => {
-                //     this.toggleRoomMembership();
-                // });
-                // this.socket.chat.on('joinedRoom', (room) => {
-                //     this.rooms[room] = true;
-                // });
-                // this.socket.chat.on('leftRoom', (room) => {
-                //     console.log("user lest room")
-                //     this.messages[room] = [];
-                //     this.rooms[room] = false;
-                // });
-
-                // this.socket.chat.on('error', (error) => {
-                //     alert(error)
-                // });
-
-                // this.socket.alerts = io('http://localhost:3000/alert');
-                // this.socket.alerts.on('alertToClient', (msg) => {
-                //     this.receiveAlertMessage(msg);
-                // });
             }
         });
 

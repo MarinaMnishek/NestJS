@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from '../../database/entities/comment.entity';
 import { CommentDTO } from '../../dto/comment.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { log } from 'console';
 
 
 @Injectable()
@@ -20,7 +21,7 @@ export class CommentsService {
     private readonly postsService: PostsService,
     private readonly mailService: MailService,
     private myLogger: MyLogger,
-    private readonly eventEmitter: EventEmitter2,
+    private  eventEmitter: EventEmitter2,
   ) {
     this.myLogger.setContext('CommentsService');
   }
@@ -59,24 +60,29 @@ export class CommentsService {
   async deleteComment(postId: number, commentId: number): Promise<Comment> {
     
     const posts = await this.postsService.getPosts();
-    
     const post = posts.find(item => item.id == postId)
-    console.log(post)
     const comment = post?.comments.find(item => item.id == commentId)
+
+    this.eventEmitter.emit('comment.delete', {
+      commentId: commentId,
+      postId: postId
+      });
  
     if (comment) {
       return this.commentsRepository.remove(comment);
     } else throw new Error('Comment not found');
   }
 
-  async updateComment(postId: number, commentId: number, data: CommentDTO): Promise<CommentDTO> {
 
-    this.eventEmitter.emit('comment.update', {
-      id: commentId,
+  async updateComment(postId: number, commentId: number, data: CommentDTO): Promise<CommentDTO> {
+    
+    let value = {
+      commentId: commentId,
       postId: postId,
       text: data.text
-      });
-
+      }
+              
+    this.eventEmitter.emit('comment.update', value)
     const comment = await this.commentsRepository.findOne({
       where: {
          id: commentId,
@@ -84,10 +90,6 @@ export class CommentsService {
     });
     // console.log(comment?.text);
    
-    
-      
-    
-    
     // const messageUpdate = { 'last': comment?.text, 'now': data.text }
     // await this.mailService.sendMessageUpdateComment('testmail188@mail.ru', messageUpdate)
     return this.commentsRepository.save({
