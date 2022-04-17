@@ -101,14 +101,15 @@ export class ChatGateway implements OnGatewayInit {
   }
 
   @OnEvent('comment.update')
-  listentToEvent(payload: any): void {
-    console.log('Message Received: ', payload);
+  listentToEventUpdateComment(payload: any): void {
+    console.log('Message Received Update: ', payload);
     this.wss.send().emit('commentUpdated', payload);
   }
 
   
-  // @OnEvent('comment.delete')
-  // handleRemoveCommentEvent(client: Socket, room: string, message: { commentId: number, postId: number}) {
-
-  // }
+  @OnEvent('comment.delete')
+  listentToEventDeleteComment(payload: any): void {
+    console.log('Message Received Delete: ', payload);
+    this.wss.send().emit('commentDeleted', payload);
+  }
 }

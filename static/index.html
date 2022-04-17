@@ -97,13 +97,20 @@
                     this.socket.chat.emit('login', login, password);
                 },
                
-                handleUpdateComments(payload) {
+                handleUpdateComment(payload) {
                     
                     let msg = {message: payload.text, room:this.activeRoom, sender:this.username, postId: payload.postId,commentId: payload.commentId}
 
                     let indexOfUpdatingComment = this.messages[this.activeRoom].findIndex(item => item.commentId == payload.commentId)
                     
                     this.messages[this.activeRoom].splice(indexOfUpdatingComment, 1, msg)
+                },
+
+                handleDeleteComment(payload) {
+                  
+                    let indexOfDeletingComment = this.messages[this.activeRoom].findIndex(item => item.commentId == payload.commentId)
+                    
+                    this.messages[this.activeRoom].splice(indexOfDeletingComment, 1)
                 }
 
 
@@ -153,13 +160,14 @@
                             this.rooms[room] = false;
                         });
                         this.socket.chat.on('commentUpdated', (msg) => {
-                            console.log('222222222', msg)
-                            this.handleUpdateComments(msg)
+                            console.log('222222222 Updated', msg)
+                            this.handleUpdateComment(msg)
                         });
 
-                        // this.socket.chat.on('commentDelete', (msg) => {
-                        //     this.handleComments(msg);
-                        // });
+                        this.socket.chat.on('commentDeleted', (msg) => {
+                            console.log('33333333 Deleted', msg)
+                            this.handleDeleteComment(msg)
+                        });
 
 
                         this.socket.alerts = io('http://localhost:3000/alert');
