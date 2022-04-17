@@ -19,12 +19,8 @@ export class Comment {
   @Column({ type: 'int' })
   postId!: number;
 
-  // @ManyToOne(() => Posts, {
-  //   onDelete: 'CASCADE',
-  // })
-  // @JoinColumn()
-  // post!: Posts;
-
+  @Column({ type: 'text', nullable: true })
+  autor!: string;
 
   @ManyToOne(() => Posts)
   @JoinColumn()

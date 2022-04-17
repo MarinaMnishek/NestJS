@@ -8,29 +8,23 @@ import {
   Query,
   Render,
   Res,
-  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { DecrementId } from '../../utils/decrement-id.decorator';
 import { CommentDTO } from '../dto/comment.dto';
-import { PostsDTO } from '../dto/post.dto';
 import { CommentsService } from '../modules/comments/comments.service';
 import { Express, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Multer } from 'multer';
 import { LoggingInterceptor } from '../modules/logger/logger.interceptor';
-// import { MailService } from '../../mail/mail.service'
-import { string } from 'yargs';
 import { Comment } from '../database/entities/comment.entity';
 
 @Controller('comments')
 @UseInterceptors(LoggingInterceptor)
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService,
-    // private mailService: MailService,
-    ) { }
+  constructor(private readonly commentsService: CommentsService) {}
 
   @Get('template')
   @Render('index')
@@ -38,7 +32,7 @@ export class CommentsController {
     return { message: 'Hello world!' };
   }
 
-  @Get('get-all')
+  @Get('/')
   async getComments(
     @Query() @DecrementId(['id']) query: { id: number },
   ): Promise<CommentDTO[]> {
@@ -48,7 +42,8 @@ export class CommentsController {
   @Get('get-one')
   async getComment(
     @Query()
-      query: {
+    @DecrementId(['postId', 'commentId'])
+    query: {
       postId: number;
       commentId: number;
     },
@@ -68,15 +63,8 @@ export class CommentsController {
   async deleteComment(
     @Body() body: { postId: number; commentId: number },
   ): Promise<Comment> {
-       
     return this.commentsService.deleteComment(body.postId, body.commentId);
   }
-
-  @Put('update')
-  async updateComment(@Query() query: { postId: number, commentId: number }, @Body() data:CommentDTO): Promise<CommentDTO> {
-     return this.commentsService.updateComment(query.postId, query.commentId, data);
-  }
-
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
@@ -89,4 +77,12 @@ export class CommentsController {
     console.log(join(process.cwd() + 'package.json'));
     await this.commentsService.getFile(response);
   }
+
+  @Put('update')
+  async updateComment(@Query() query: { postId: number, commentId: number }, @Body() data:CommentDTO): Promise<CommentDTO> {
+   
+     return this.commentsService.updateComment(query.postId, query.commentId, data);
+  }
+
+
 }

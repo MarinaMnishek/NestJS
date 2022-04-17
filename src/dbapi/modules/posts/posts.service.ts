@@ -18,11 +18,20 @@ export class PostsService {
 
   async getPost(id: number): Promise<Posts | undefined> {
     return this.postsRepository.findOne({
-      relations: ['comments'],
       where: {
-         id,
+        id,
       },
-    });
+      relations: ['comments']
+    },);
+  }
+
+  async getPostByName(name: string): Promise<Posts | undefined> {
+    return this.postsRepository.findOne({
+      where: {
+        name
+      },
+      relations: ['comments']
+    },);
   }
 
   async createPost(data: PostsDTO): Promise<Posts> {
@@ -43,7 +52,6 @@ export class PostsService {
 
   async deletePost(id: number): Promise<Posts> {
     const post = await this.postsRepository.findOne({
-      relations: ['comments'],
       where: {
         id,
       },
@@ -51,5 +59,4 @@ export class PostsService {
     if (post) return this.postsRepository.remove(post);
     else throw new Error('Post not found');
   }
- 
 }

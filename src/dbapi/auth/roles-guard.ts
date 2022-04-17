@@ -44,8 +44,6 @@ export class RolesGuard implements CanActivate {
 			if (!requiredRoles) {
 				return true;
 			}
-			console.log(requiredRoles);
-			
 			const request = await context.switchToHttp().getRequest();
 			const accessToken = request.headers['authorization'];
 			if (!accessToken) {
@@ -66,12 +64,8 @@ export class RolesGuard implements CanActivate {
 				const role = await this.roleRepository.findOneOrFail(map.roleId)
 				canActivate = requiredRoles.includes(role.value)
 				if (canActivate) break
-				// console.log(requiredRoles);
-				// console.log('Our role ' + role.value);
-				
 			}
 			return canActivate;
-			// return user.roles.some(role => requiredRoles.includes(role.value))
 		} catch (e: any) {
 			throw new HttpException(e.message, HttpStatus.FORBIDDEN);
 		}

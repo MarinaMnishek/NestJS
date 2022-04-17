@@ -15,8 +15,6 @@ import { Posts } from '../database/entities/post.entity';
 import { PostsDTO } from '../dto/post.dto';
 import { PostsService } from '../modules/posts/posts.service';
 
-
-
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
@@ -30,7 +28,6 @@ export class PostsController {
   async getPost(@Query() query: { id: number }): Promise<Posts | undefined> {
     return this.postsService.getPost(query.id);
   }
-  
   
   @Roles("User")
   @UseGuards(RolesGuard)
@@ -47,9 +44,6 @@ export class PostsController {
     return this.postsService.deletePost(body.id);
   }
 
-
-  @Roles("Test")
-  @UseGuards(RolesGuard)
   @Put('update')
   async updatePost(
     @Query() query: { id: number },
