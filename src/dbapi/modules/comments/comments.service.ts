@@ -73,7 +73,6 @@ export class CommentsService {
     } else throw new Error('Comment not found');
   }
 
-
   async updateComment(postId: number, commentId: number, data: CommentDTO): Promise<CommentDTO> {
     
     let value = {
