@@ -38,7 +38,7 @@ export class CommentsController {
   @ApiOperation({
     summary: 'Получение комментариев',
   })
-  
+  @ApiQuery({ name: 'id', type: Number })
   @ApiResponse({ status: 200, type: [CommentDTO] })
   @Get('/')
   async getComments(
@@ -50,6 +50,8 @@ export class CommentsController {
   @ApiOperation({
     summary: 'Получение одного комментария',
   })
+  @ApiQuery({ name: 'postId', type: Number })
+  @ApiQuery({ name: 'commentId', type: Number })
   @ApiResponse({ status: 200, type: CommentDTO })
   @Get('get-one')
   async getComment(
@@ -89,6 +91,10 @@ export class CommentsController {
     return this.commentsService.deleteComment(body.postId, body.commentId);
   }
 
+  @ApiOperation({
+    summary: 'Загрузка документа pdf',
+  })
+  @ApiResponse({ status: 200, type: Buffer })
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
@@ -105,7 +111,13 @@ export class CommentsController {
     await this.commentsService.getFile(response);
   }
 
-
+  @ApiOperation({
+    summary: 'Обновление комментария',
+  })
+  @ApiQuery({ name: 'postId', type: Number })
+  @ApiQuery({ name: 'commentId', type: Number })
+  @ApiBody({ type: CommentDTO})
+  @ApiResponse({ status: 200, type: CommentDTO })
   @Put('update')
   async updateComment(@Query() query: { postId: number, commentId: number }, @Body() data:CommentDTO): Promise<CommentDTO> {
    

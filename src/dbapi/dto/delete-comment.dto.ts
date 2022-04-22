@@ -9,6 +9,6 @@ export class DeleteCommentDTO {
 
   @ApiProperty({description: 'Номер комментария'})
   @IsInt()
-  commentId!: Date;
+  commentId!: string;
 
 }
